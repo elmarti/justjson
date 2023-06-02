@@ -2,7 +2,7 @@ import express from 'express';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
-export default async function startServer(port: number, dataPath: string = 'routes'): Promise<express.Application> {
+export default async function startServer(port: number, dataPath: string = '../routes'): Promise<express.Application> {
     const app = express();
     app.use(express.json());
 
@@ -28,7 +28,14 @@ export default async function startServer(port: number, dataPath: string = 'rout
             app.get(routePath, (req, res) => {
                 res.json(fileData);
             });
+            app.get(`${routePath}/:${config.idField}`, (req, res) => {
+                //@ts-ignore
+                const id = req.params[config.idField];
+                res.json(fileData.find((x: { [x: string]: any; }) => x[config.idField] == id));
+            });
             console.log(`Registering GET ${routePath}`);
+            console.log(`Registering GET ${routePath}/:${config.idField}`);
+
         }
 
         if (config.methods.includes('post')) {
