@@ -5,9 +5,15 @@ import * as path from 'path';
 export default async function startServer(port: number, dataPath: string = '../routes'): Promise<express.Application> {
     const app = express();
     app.use(express.json());
+    app.set('json spaces', 2)
 
     const routeFolders = await fs.readdir(path.join(__dirname, dataPath));
-
+    app.get('/', (req, res) => {
+        res.json({
+            title: 'Dummy API',
+            resources: routeFolders
+        });
+    });
     for (const folder of routeFolders) {
         const routePath = `/${folder}`;
         const filePath = path.join(__dirname, dataPath, folder, 'data.json');
