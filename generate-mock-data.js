@@ -74,6 +74,9 @@ const tables = [{
     }, {
         title: 'availability',
         type: 'datetime'
+    }, {
+        title: 'councillor_id',
+        type: 'int'
     }]
 },{
     title: 'appointment',
