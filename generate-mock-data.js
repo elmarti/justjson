@@ -302,8 +302,8 @@ function resolveData(data){
 for(const table of tables){
     console.log('creating table', table.title);
     const dummyData = [];
+    pkCount = {};
     for(let i = 0; i< rows; i++){
-        pkCount = {};
         const newRow = {};
         for(const column of table.columns){
             newRow[column.title] = resolveData(column);
