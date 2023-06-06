@@ -253,7 +253,7 @@ function resolveData(data){
     }
     switch(data.type) {
         case 'pk':
-            if(!pkCount[data.title]){
+            if(typeof pkCount[data.title] === 'undefined'){
                 pkCount[data.title] = 0; 
             }
             return pkCount[data.title]++;
