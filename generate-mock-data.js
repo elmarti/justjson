@@ -256,7 +256,7 @@ function resolveData(data){
             if(!pkCount[data.title]){
                 pkCount[data.title] = 0; 
             }
-            return pkCount++;
+            return pkCount[data.title]++;
         case 'int':
             return Math.floor(Math.random() * (rows - 0 + 1) + 0);
         case 'rating':
