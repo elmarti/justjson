@@ -223,7 +223,7 @@ const tables = [{
         value: true
     }, {
         title: 'councillor_id',
-        value:'councillor_id'
+        type:'councillor_id'
     }]
 }]
 
