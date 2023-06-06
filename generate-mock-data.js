@@ -7,13 +7,13 @@ const tables = [{
     title: 'patient',
     columns: [{
         title: 'id',
-        type: 'int',
+        type: 'pk',
     },{
         title: 'created',
         type: 'datetime',
     },{
         title: 'updated',
-        type: 'datetime',
+        type: 'updated',
     },{
         title: 'user_id',
         type: 'int'
@@ -25,13 +25,13 @@ const tables = [{
     title: 'report',
     columns: [{
         title: 'id',
-        type: 'int',
+        type: 'pk',
     },{
         title: 'created',
         type: 'datetime',
     },{
         title: 'updated',
-        type: 'datetime',
+        type: 'updated',
     },{
         title: 'patient_id',
         type: 'int'
@@ -46,13 +46,13 @@ const tables = [{
     title: 'patient_councillor',
     columns: [{
         title: 'id',
-        type: 'int',
+        type: 'pk',
     },{
         title: 'created',
         type: 'datetime',
     },{
         title: 'updated',
-        type: 'datetime',
+        type: 'updated',
     }, {
         title: 'patient_id',
         type: 'int'
@@ -64,13 +64,13 @@ const tables = [{
     title: 'availability',
     columns: [{
         title: 'id',
-        type: 'int',
+        type: 'pk',
     },{
         title: 'created',
         type: 'datetime',
     },{
         title: 'updated',
-        type: 'datetime',
+        type: 'updated',
     }, {
         title: 'availability',
         type: 'datetime'
@@ -82,13 +82,13 @@ const tables = [{
     title: 'appointment',
     columns: [{
         title: 'id',
-        type: 'int',
+        type: 'pk',
     },{
         title: 'created',
         type: 'datetime',
     },{
         title: 'updated',
-        type: 'datetime',
+        type: 'updated',
     }, {
         title: 'availability_id',
         type: 'int'
@@ -103,13 +103,13 @@ const tables = [{
     title: 'notes',
     columns: [{
         title: 'id',
-        type: 'int',
+        type: 'pk',
     },{
         title: 'created',
         type: 'datetime',
     },{
         title: 'updated',
-        type: 'datetime',
+        type: 'updated',
     }, {
         title: 'content',
         type: 'text'
@@ -121,13 +121,13 @@ const tables = [{
     title: 'rating',
     columns: [{
         title: 'id',
-        type: 'int',
+        type: 'pk',
     },{
         title: 'created',
         type: 'datetime',
     },{
         title: 'updated',
-        type: 'datetime',
+        type: 'updated',
     }, {
         title: 'appointment_id',
         type: 'int'
@@ -142,13 +142,13 @@ const tables = [{
     title: 'account',
     columns: [{
         title: 'id',
-        type: 'int',
+        type: 'pk',
     },{
         title: 'created',
         type: 'datetime',
     },{
         title: 'updated',
-        type: 'datetime',
+        type: 'updated',
     }, {
         title: 'email',
         type: 'email'
@@ -184,13 +184,13 @@ const tables = [{
     title: 'councillor',
     columns: [{
         title: 'id',
-        type: 'int',
+        type: 'pk',
     },{
         title: 'created',
         type: 'datetime',
     },{
         title: 'updated',
-        type: 'datetime',
+        type: 'updated',
     }, {
         title: 'specialization',
         either: ['Anxiety', 'Depression']
@@ -205,13 +205,13 @@ const tables = [{
     title: 'price_log',
     columns: [{
         title: 'id',
-        type: 'int',
+        type: 'pk',
     },{
         title: 'created',
         type: 'datetime',
     },{
         title: 'updated',
-        type: 'datetime',
+        type: 'updated',
     }, {
         title: 'amount_in_pkr',
         type: 'int'
@@ -223,7 +223,7 @@ const tables = [{
         value: true
     }, {
         title: 'councillor_id',
-        type:'councillor_id'
+        type:'pk'
     }]
 }]
 
@@ -239,6 +239,10 @@ function makeid(length) {
     return result;
 }
 let councillorId = 0;
+// A little hack to ensure the `updated` value is always greater than or equal to the `created` date
+let lastDate = new Date();
+let pkCount = {};
+
 function resolveData(data){
     if(typeof data.value !== 'undefined'){
         return data.value;
@@ -248,12 +252,20 @@ function resolveData(data){
         return data.either[random];
     }
     switch(data.type) {
+        case 'pk':
+            if(!pkCount[data.title]){
+                pkCount[data.title] = 0; 
+            }
+            return pkCount++;
         case 'int':
             return Math.floor(Math.random() * (rows - 0 + 1) + 0);
         case 'rating':
             return Math.floor(Math.random() * (5 - 0 + 1) + 0);
         case 'datetime':
+            lastDate = faker.date.past();
             return faker.date.past();
+        case 'updated':
+            return faker.date.between({from:lastDate,to:new Date()});
         case 'phone_number':
             return faker.phone.number();
         case 'url':
@@ -266,8 +278,6 @@ function resolveData(data){
             return makeid(50);
         case 'text':
             return faker.lorem.paragraph();
-        case 'councillor_id':
-            return councillorId++;
         case 'address':
             const coordinates = faker.location.nearbyGPSCoordinate({origin:[24.8607, 67.0011], radius: 1000});
             return {
@@ -293,6 +303,7 @@ for(const table of tables){
     console.log('creating table', table.title);
     const dummyData = [];
     for(let i = 0; i< rows; i++){
+        pkCount = {};
         const newRow = {};
         for(const column of table.columns){
             newRow[column.title] = resolveData(column);
