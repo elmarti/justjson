@@ -16,7 +16,7 @@ const tables = [{
         type: 'updated',
     },{
         title: 'user_id',
-        type: 'int'
+        type: 'pk'
     }, {
         title: 'guardian_phone_number',
         type: 'phone_number'
@@ -199,7 +199,7 @@ const tables = [{
         type: 'text'
     }, {
         title: 'user_id',
-        type: 'int'
+        type: 'pk'
     }]
 },{
     title: 'price_log',
